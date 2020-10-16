@@ -12,6 +12,11 @@ class FirstWords extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/' : (context)=> LobbyScreen(),
+        '/slideshow' : (context)=> SlideshowScreen()
+      },
       debugShowCheckedModeBanner: false,
       title: 'Baby First Words',
       theme: ThemeData(
@@ -21,7 +26,6 @@ class FirstWords extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       //home: SlideshowScreen(),
-      home: LobbyScreen(),
     );
   }
 }

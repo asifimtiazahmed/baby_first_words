@@ -39,11 +39,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - images/animals/
-    - images/objects/
-    - images/letters/
-    - images/
-    - images/numbers/
+    - assets/images/animals/
+    - assets/images/objects/
+    - assets/images/letters/
+    - assets/images/
+    - assets/images/numbers/
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:

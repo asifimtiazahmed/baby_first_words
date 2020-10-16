@@ -15,12 +15,12 @@ class LobbyScreen extends StatelessWidget {
             crossAxisSpacing: 20,
             mainAxisSpacing: 20,
             children: [
-              BigButton(assetImagePath: 'images/abc_main.webp', onPress: ()=> null, darkShadowColor: Colors.blue, lightShadowColor: Colors.yellow,),
-              Text('Container 2'),
-              Text('Container 3'),
-              Text('Container 4'),
+              BigButton(assetImagePath: 'images/abc.png', onPress: ()=> Navigator.pushNamed(context, '/slideshow'), darkShadowColor: Colors.blue, lightShadowColor: Colors.yellow,),
+              BigButton(assetImagePath: 'images/animals.png', onPress: ()=> null, darkShadowColor: Colors.blue, lightShadowColor: Colors.yellow,),
+              BigButton(assetImagePath: 'images/obj.png', onPress: ()=> null, darkShadowColor: Colors.blue, lightShadowColor: Colors.yellow,),
+              BigButton(assetImagePath: 'images/123.png', onPress: ()=> null, darkShadowColor: Colors.blue, lightShadowColor: Colors.yellow,),
             ],
-            padding: EdgeInsets.only(top: 150),
+            padding: EdgeInsets.only(top: 150, left: 20, right: 20),
 
           ),
         ),
