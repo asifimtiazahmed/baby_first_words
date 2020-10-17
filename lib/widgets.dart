@@ -7,9 +7,10 @@ class BigButton extends StatelessWidget {
   final String soundPath;
   final Color darkShadowColor;
   final Color lightShadowColor;
+  final Color splashColor;
 
   BigButton(
-      {@required this.assetImagePath, @required this.onPress, this.soundPath, this.darkShadowColor, this.lightShadowColor});
+      {@required this.assetImagePath, @required this.onPress, this.soundPath, this.darkShadowColor, this.lightShadowColor, this.splashColor});
   @override
   Widget build(BuildContext context) {
     return Neumorphic(
@@ -23,6 +24,7 @@ class BigButton extends StatelessWidget {
           color: Colors.white,
       ),
       child: FlatButton(
+        splashColor: splashColor,
         child: Container(
           constraints: BoxConstraints.expand(),
           decoration: BoxDecoration(

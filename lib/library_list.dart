@@ -1,4 +1,4 @@
-class Library {
+
   List everydayObjects = [
     'tree',
     'bottle',
@@ -7,7 +7,7 @@ class Library {
     'balloon',
     'tissue',
     'glasses',
-    'watch',
+    'clock',
     'candy',
     'photo',
     'camera',
@@ -150,4 +150,3 @@ class Library {
     '10'
   ];
 
-}

@@ -21,7 +21,7 @@ class FirstWords extends StatelessWidget {
       title: 'Baby First Words',
       theme: ThemeData(
 
-        primarySwatch: Colors.lightBlue,
+        primarySwatch: Colors.green,
 
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
