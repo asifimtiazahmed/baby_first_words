@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart'; //this is for playing the sounds
 import 'items.dart';
 import 'library_list.dart';
 
@@ -63,6 +62,11 @@ class SliderMain{
     (index==null) ? index=0:index=index; //if index starts with null then index is 0
     (index > 50 || index < 0) ? index = 0 : index = index; //if the index is going beyond 50 or less than 0 then set it back to 0
   }
+
+  void setIndex(int indexNo){
+    (indexNo != null && indexNo <= 50 && indexNo >= 0) ? index = indexNo : print('index no $indexNo is invalid');
+  }
+
 
 
 

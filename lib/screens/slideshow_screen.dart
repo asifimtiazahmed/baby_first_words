@@ -8,6 +8,8 @@ import 'package:flutter_first_words/slider_brain.dart';
 import 'package:flutter_first_words/random_color_generator.dart';
 import 'package:flutter_first_words/constants.dart';
 
+import '../widgets.dart';
+
 class SlideshowScreen extends StatefulWidget {
 //TODO: Transfer the sliderBrain object from main screen to here
   final String libraryName;
@@ -19,7 +21,8 @@ class SlideshowScreen extends StatefulWidget {
 class _SlideshowScreenState extends State<SlideshowScreen> {
   bool volumeStatus = true;
   int index;
-  String soundPath;
+  int gridIconSize = 150;
+
   //UniqueColorGenerator colorGen = UniqueColorGenerator();
 
   Widget volume(bool status) {
@@ -31,10 +34,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
 
   SliderMain slider = SliderMain();
   final player = AudioCache();
+  ScrollController _controller; //for controlling the GridView Scrolling
 
   @override
   void initState() {
     // TODO: implement initState
+    _controller = ScrollController();
     slider.start(widget.libraryName);
     super.initState();
   }
@@ -86,8 +91,8 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
               flex: 9,
               child: GestureDetector(
                 onTap: () {
-                  soundPath = slider.getSoundPath();
-                  player.play(soundPath);
+                  //soundPath = slider.getSoundPath();
+                  (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
                 },
                 child: Container(
                   width: double.infinity,
@@ -122,7 +127,6 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                           (volumeStatus)
                               ? volumeStatus = false
                               : volumeStatus = true;
-                          //TODO: need to link this to the sound getter so that it does not play sound
                         });
                       }),
                 ],
@@ -155,7 +159,13 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                     onPressed: () {
                       setState(() {
                         slider.updateIndex(-1);
-                        player.play(slider.getSoundPath());
+                        (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
+                        if(slider.index != 0) { //this will prevent it from offsetting after the first image
+                          _controller.animateTo(
+                              _controller.offset - gridIconSize,
+                              curve: Curves.linear,
+                              duration: Duration(milliseconds: 500));
+                        }
                       });
                     }
                   ),
@@ -181,7 +191,12 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                     onPressed: () {
                       setState(() {
                         slider.updateIndex(1);
-                        player.play(slider.getSoundPath());
+                        (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
+
+                        if(slider.index != 0){
+                          _controller.animateTo(_controller.offset + gridIconSize,
+                            curve: Curves.linear, duration: Duration(milliseconds: 500));
+                        }
                       });
                     }
                   ),
@@ -190,11 +205,53 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
             ),
             Expanded(
               flex: 4,
-              child: Text('List View for all the images in the list'),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0,10,2,10),
+                child: GridView.count(
+                    controller: _controller,
+                    crossAxisCount: 1,
+                    childAspectRatio: 1,
+                    scrollDirection: Axis.horizontal,
+                    mainAxisSpacing: 10,
+                    children: createButtons(),
+                  addRepaintBoundaries: true,
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+  List <Widget> createButtons (){
+  List<Widget> returningList = [];
+    for(int x=0; x< slider.itemsList.length; x++){
+      returningList.add(
+          Container(
+            width: 150,
+            child: BigButton(
+              assetImagePath: slider.itemsList[x].imagePath,
+              onPress: (){
+                setState(() {
+                  slider.setIndex(x); //set the index to the new selected image
+                  print('index set as $x in forLoop and actual item is now is ${slider.itemsList[x].imagePath} ');
+                  (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus; //if volume status is not off then play its relevant file
+                });
+
+              },
+              splashColor: UniqueColorGenerator.getColor(),
+              lightShadowColor: Colors.lightGreenAccent,
+              darkShadowColor: Colors.black26,
+            ),
+          ),
+      );
+    }
+    return returningList;
+
+  }
 }
+
+
+
+
+
