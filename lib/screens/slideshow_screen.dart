@@ -1,29 +1,55 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:audioplayers/audio_cache.dart'; //this is for playing the sounds
+//import 'package:audioplayers/audio_cache.dart'; //this is for playing the sounds
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart'; //this is for the arrows
 import 'package:flutter_first_words/slider_brain.dart';
 import 'package:flutter_first_words/random_color_generator.dart';
 import 'package:flutter_first_words/constants.dart';
-
 import '../widgets.dart';
+import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flutter_first_words/admob.dart';
+
+
+
 
 class SlideshowScreen extends StatefulWidget {
-//TODO: Transfer the sliderBrain object from main screen to here
   final String libraryName;
-  SlideshowScreen({this.libraryName});
+  final File assetPathFile;
+  SlideshowScreen({this.libraryName, this.assetPathFile});
+
   @override
   _SlideshowScreenState createState() => _SlideshowScreenState();
 }
 
 class _SlideshowScreenState extends State<SlideshowScreen> {
   bool volumeStatus = true;
-  int index;
-  int gridIconSize = 150;
+  double gridIconSize = 120;
+  String soundPath;
+  double width; //screen width for calculating the carousal movement
+  double height; // screen height
+  AdMobService ams = AdMobService();
+  static final MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    childDirected: true,
+    testDevices: <String>['Mobile_Id'], // Android emulators are considered test devices
+  );
 
-  //UniqueColorGenerator colorGen = UniqueColorGenerator();
+  BannerAd _bannerAd = BannerAd(
+    // Replace the testAdUnitId with an ad unit id from the AdMob dash.
+    // https://developers.google.com/admob/android/test-ads
+    // https://developers.google.com/admob/ios/test-ads
+    adUnitId: BannerAd.testAdUnitId,
+    size: AdSize.smartBanner,
+    targetingInfo: targetingInfo,
+    listener: (MobileAdEvent event) {
+      print("BannerAd event is $event");
+    },
+  );
+
+
 
   Widget volume(bool status) {
     if (status) {
@@ -33,27 +59,99 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
   }
 
   SliderMain slider = SliderMain();
-  final player = AudioCache();
+  //final player = AudioCache();
+  AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
+  //final player = AudioCache(prefix: '');
   ScrollController _controller; //for controlling the GridView Scrolling
 
   @override
   void initState() {
-    // TODO: implement initState
+
     _controller = ScrollController();
+    slider.assetPath = widget.assetPathFile;
     slider.start(widget.libraryName);
+    soundPath = slider.getSoundPath();
+    try{playLocal(soundPath);}
+    catch(e){
+      print(e);
+    }
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId); //ams.getAdMobAppId()
+    _bannerAd..load()..show(anchorType: AnchorType.bottom, anchorOffset: -10 );
+
+
+
     super.initState();
   }
-  //TODO: Need to create a function to navigate to the slideshow screen passing on the argument of the selected button(abc, object etc)
+
+  @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
+  void prevCallback(){
+    setState(() {
+      slider.updateIndex(-1);
+      soundPath = slider.getSoundPath();
+      try{(volumeStatus) ? playLocal(soundPath) : volumeStatus = volumeStatus;} catch(e){print(e);}
+      if(slider.index > 0) { //this will prevent it from offsetting after the first image
+        _controller.animateTo(
+            _controller.offset - gridIconSize,
+            curve: Curves.linear,
+            duration: Duration(milliseconds: 500));
+      }
+    });
+  }
+
+  void nextCallback(){
+    setState(() {
+      slider.updateIndex(1);
+      soundPath = slider.getSoundPath();
+      try{(volumeStatus) ? playLocal(soundPath) : volumeStatus = volumeStatus;} catch(e){print(e);}
+
+      if(slider.index > 1){
+        _controller.animateTo(_controller.offset + gridIconSize,
+            curve: Curves.linear, duration: Duration(milliseconds: 500));
+      } else if (slider.index == 0){
+        _controller.animateTo(
+            _controller.offset - gridIconSize*slider.itemsList.length,
+            curve: Curves.linear,
+            duration: Duration(milliseconds: 500));
+      }
+    });
+  }
+
+  void playLocal(String inputSoundPath) async {
+    int result = await audioPlayer.play(inputSoundPath, isLocal: true);
+    print('AUDIO PLAYER WAS CALLED AND THE RESULT IS $result');
+  }
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
+    //print('the height of the screen is $height and the width of the device is $width');
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Baby First Words',
-          style: GoogleFonts.spicyRice(
-              textStyle: TextStyle(
-                  letterSpacing: 1.2, fontSize: 30, color: Colors.black87)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              'Baby First Words',
+              style: GoogleFonts.spicyRice(
+                  textStyle: TextStyle(
+                      letterSpacing: 1.2, fontSize: 25, color: Colors.black87)),
+            ),
+            FlatButton(
+                child: volume(volumeStatus),
+                onPressed: () {
+                  setState(() {
+                    (volumeStatus)
+                        ? volumeStatus = false
+                        : volumeStatus = true;
+                  });
+                }),
+          ],
         ),
       ),
       body: SafeArea(
@@ -66,7 +164,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(35, 20, 12, 5),
+                    padding: const EdgeInsets.fromLTRB(35, 8, 12, 5),
                     child: Text(
                       slider.nameOfList,
                       style: GoogleFonts.spicyRice(
@@ -75,7 +173,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 20, 55, 2),
+                    padding: const EdgeInsets.fromLTRB(2, 8, 55, 2),
                     child: Text(
                       slider.getItemName(),
                       style: GoogleFonts.spicyRice(
@@ -86,51 +184,53 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   ),
                 ],
               ),
-            ),
+            ),// Name of Library + Current Name
             Expanded(
               flex: 9,
-              child: GestureDetector(
-                onTap: () {
-                  //soundPath = slider.getSoundPath();
-                  (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
-                },
-                child: Container(
-                  width: double.infinity,
-                  constraints: BoxConstraints.expand(),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(slider.getImagePath()),
-                        fit: BoxFit.scaleDown),
-                  ),
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
+                children:[
+
+                  GestureDetector(
+                  onHorizontalDragEnd: (details){
+                    if (details.primaryVelocity > 0) {prevCallback();}
+                    if (details.primaryVelocity < 0) {nextCallback();}
+                    },
+                  onTap: () {
+                    soundPath = slider.getSoundPath();
+                    try{
+                      (volumeStatus) ? playLocal(soundPath) : volumeStatus = volumeStatus;
+                    }
+                    catch(e){
+                      print(e);
+                    }
+
+                  },
+                    child: Image.file(File(slider.getImagePath()))
+                    // AnimatedContainer(
+                    //   duration: const Duration(milliseconds: 400),
+                    //   //width: double.infinity,
+                    //   constraints: BoxConstraints.expand(),
+                    //   decoration: BoxDecoration(
+                    //     image: DecorationImage(
+                    //         image: AssetImage('images/alphabets/a.gif'),
+                    //         fit: BoxFit.scaleDown),
+                    //   ),
+                    // ),
                 ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 5, 0, 10),
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${slider.index + 1}/ ${slider.itemsList.length - 1}',
+                      '${slider.index + 1}/ ${slider.itemsList.length}',
                       style: TextStyle(
                           fontSize: 18,
-                          color: Colors.redAccent,
-                          fontWeight: FontWeight.bold),
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                      backgroundColor: Color(0x66FFFFFF),
+                      ),
                     ),
                   ),
-                  FlatButton(
-                      child: volume(volumeStatus),
-                      onPressed: () {
-                        setState(() {
-                          (volumeStatus)
-                              ? volumeStatus = false
-                              : volumeStatus = true;
-                        });
-                      }),
-                ],
-              ),
+              ]),
             ),
             Expanded(
               flex: 3,
@@ -142,7 +242,7 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                       clipper: ArrowClipper(70, 90, Edge.LEFT),
                       child: Container(
                         height: 120,
-                        width: 150,
+                        width: 150,  //this is the size I specified for each of the carousal pictures,
                         color: Colors.orange,
                         child: Center(
                           child: Text(
@@ -156,17 +256,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                         ),
                       ),
                     ),
+                    onLongPress: (){
+                      Duration delay = Duration(seconds: 2);
+                        Future.delayed((delay), (){
+                          prevCallback();
+                        });
+                    },
                     onPressed: () {
-                      setState(() {
-                        slider.updateIndex(-1);
-                        (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
-                        if(slider.index != 0) { //this will prevent it from offsetting after the first image
-                          _controller.animateTo(
-                              _controller.offset - gridIconSize,
-                              curve: Curves.linear,
-                              duration: Duration(milliseconds: 500));
-                        }
-                      });
+                      prevCallback();
                     }
                   ),
                   FlatButton(
@@ -188,16 +285,14 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                         ),
                       ),
                     ),
+                      onLongPress: (){
+                        Duration delay = Duration(seconds: 2);
+                        Future.delayed((delay), (){
+                          nextCallback();
+                        });
+                      },
                     onPressed: () {
-                      setState(() {
-                        slider.updateIndex(1);
-                        (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus;
-
-                        if(slider.index != 0){
-                          _controller.animateTo(_controller.offset + gridIconSize,
-                            curve: Curves.linear, duration: Duration(milliseconds: 500));
-                        }
-                      });
+                      nextCallback();
                     }
                   ),
                 ],
@@ -217,7 +312,11 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
                   addRepaintBoundaries: true,
                 ),
               ),
+            ), //List Slider
+            SizedBox(
+              height: 100.0
             ),
+
           ],
         ),
       ),
@@ -228,14 +327,16 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
     for(int x=0; x< slider.itemsList.length; x++){
       returningList.add(
           Container(
-            width: 150,
+            width: 100,
+            height: 100,
             child: BigButton(
-              assetImagePath: slider.itemsList[x].imagePath,
+              useAssetImage: false,
+              fileImagePath: slider.itemsList[x].imagePath,
               onPress: (){
                 setState(() {
                   slider.setIndex(x); //set the index to the new selected image
-                  print('index set as $x in forLoop and actual item is now is ${slider.itemsList[x].imagePath} ');
-                  (volumeStatus) ? player.play(slider.getSoundPath()) : volumeStatus = volumeStatus; //if volume status is not off then play its relevant file
+               //   print('index set as $x in forLoop and actual item is now is ${slider.itemsList[x].imagePath} ');
+                  try{(volumeStatus) ? playLocal(slider.getSoundPath()) : volumeStatus = volumeStatus;}catch(e){print(e);} //if volume status is not off then play its relevant file
                 });
 
               },
@@ -247,11 +348,5 @@ class _SlideshowScreenState extends State<SlideshowScreen> {
       );
     }
     return returningList;
-
   }
 }
-
-
-
-
-
