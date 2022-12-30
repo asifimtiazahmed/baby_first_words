@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>552182376999-8oufte41p4f2oevkvht5runps9c3aoso.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.552182376999-8oufte41p4f2oevkvht5runps9c3aoso</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>552182376999-lukgvj5bcjn09lrpfmacesoeb481arjf.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBFdGjMalkM3RusoE6xsBPBecTiB304Jls</string>
+	<key>GCM_SENDER_ID</key>
+	<string>552182376999</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.weaveio.flutter-first-words</string>
+	<key>PROJECT_ID</key>
+	<string>baby-first-words</string>
+	<key>STORAGE_BUCKET</key>
+	<string>baby-first-words.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:552182376999:ios:f9a721267735460987fc02</string>
+	<key>DATABASE_URL</key>
+	<string>https://baby-first-words.firebaseio.com</string>
+</dict>
+</plist>

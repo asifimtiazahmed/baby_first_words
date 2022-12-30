@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "552182376999",
+    "firebase_url": "https://baby-first-words.firebaseio.com",
+    "project_id": "baby-first-words",
+    "storage_bucket": "baby-first-words.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552182376999:android:a1699a094af709b387fc02",
+        "android_client_info": {
+          "package_name": "com.weaveio.flutter_first_words"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552182376999-a7a0vl308v3ogr8e865kgopnc40v5k42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH00desxSSlf1JLPAQ2CM1MfFhun-gkq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552182376999-a7a0vl308v3ogr8e865kgopnc40v5k42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552182376999:android:55732c171c8d98ed87fc02",
+        "android_client_info": {
+          "package_name": "com.weaveio.flutter_first_words"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552182376999-a7a0vl308v3ogr8e865kgopnc40v5k42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH00desxSSlf1JLPAQ2CM1MfFhun-gkq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552182376999-a7a0vl308v3ogr8e865kgopnc40v5k42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
