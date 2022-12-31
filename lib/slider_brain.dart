@@ -35,7 +35,7 @@ class SliderMain {
   }
 
   void createLocalList(List listFromLibrary) {
-    List<Items> newList = [];
+    List<Item> newList = [];
     for (String x in listFromLibrary) {
       // Items items = Items();
       // items.name = x;
