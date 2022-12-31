@@ -115,9 +115,9 @@ class LobbyViewModel with ChangeNotifier {
     }
   }
 
-  Future<List<Items>> generateItemListObjects(
+  Future<List<Item>> generateItemListObjects(
       List<String> imagePaths, List<String> soundPaths, int indexOfButtonInButtonList) async {
-    List<Items> generateItems = [];
+    List<Item> generateItems = [];
     //Both the lists should be the same
     int? itemIndex = 0;
     int totalNumberOfItemsToProcess = imagePaths.length + soundPaths.length;
@@ -144,7 +144,7 @@ class LobbyViewModel with ChangeNotifier {
 
           String soundUrl = await _firebaseManager.getDownloadUrl(soundPaths[j]);
 
-          Items item = Items(
+          Item item = Item(
             name: imageName,
             soundPath: soundUrl,
             imagePath: imageUrl,
