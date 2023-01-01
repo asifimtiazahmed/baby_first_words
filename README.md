@@ -44,3 +44,9 @@ of downloading all the fixed assets for the first time as the app loads, this ve
 This version is more stable then the first time I created it. It has taken me a whole one and half weeks to completely
 re-write this app, and also have it get included for iOS. 
 
+## IDEAS FOR VERSION 3
+-> A skippable interstitial ad comes, then We can have a games section where you pick the lobby card and a game comes with it
+    a) "Memory Match" Memory Match Game (matching gives affirmations "You did it!", "Well done!", "Uh Oh!", "Try Again!")
+    b) "Pick The Correct One" An item is randomly selected and its sound is spoken, then 4 tiles come up that includes that item image and 3 others. The baby has to pick the right tile to win.
+    
+

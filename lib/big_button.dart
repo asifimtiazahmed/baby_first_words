@@ -20,7 +20,6 @@ class BigButton extends StatelessWidget {
 
   ///If you want to show a progress indication that the slideshow is still loading, note this as yes
   final bool isLoading;
-  final AudioPlayer player;
   final Function? onTap;
 
   const BigButton({
@@ -28,7 +27,6 @@ class BigButton extends StatelessWidget {
     required this.soundPath,
     required this.fileImagePath,
     required this.isLoading,
-    required this.player,
     this.slideshow,
     this.name,
     this.progressValue,

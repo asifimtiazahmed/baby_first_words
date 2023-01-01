@@ -1,3 +1,4 @@
+import 'package:baby_f_words/managers/file_handler.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 
@@ -22,6 +23,7 @@ class AppConfig {
       GetIt.I.registerSingleton(DataManager());
       GetIt.I.registerSingleton(FirebaseAuthManager());
       final authManager = GetIt.I<FirebaseAuthManager>();
+      GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
     });
   }

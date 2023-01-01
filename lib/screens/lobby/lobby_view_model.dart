@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/managers/data_manager.dart';
+import 'package:baby_f_words/managers/file_handler.dart';
 import 'package:baby_f_words/managers/firebase_storage_manager.dart';
+import 'package:baby_f_words/managers/local_storage_manager.dart';
 import 'package:baby_f_words/models/items.dart';
 import 'package:baby_f_words/models/slideshow.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,13 @@ import 'package:logger/logger.dart';
 import 'package:recase/recase.dart';
 
 import 'package:baby_f_words/random_color_generator.dart';
-
 import 'package:baby_f_words/managers/admob.dart';
 
 class LobbyViewModel with ChangeNotifier {
   bool isLoading = true;
   final _firebaseManager = FirebaseStorageManager();
   final _dataManager = GetIt.I<DataManager>();
+  final _storageManager = StorageManager();
   List<BigButton> listOfButtons = [];
   List<SlideshowItem> slideshowItems = [];
   List<String> listOfFolders = [];
@@ -44,18 +46,24 @@ class LobbyViewModel with ChangeNotifier {
   init() async {
     await audioPlayer.setSource(AssetSource(Assets.startUpMusic));
     await audioPlayer.resume();
-    listOfFolders = await _firebaseManager.generateFileList();
+    listOfFolders = await _firebaseManager.generateFileList(); //Folders on the firestore_storageManager.
     listOfButtons.clear();
     _dataManager.bigButtonList.clear();
+    bool folderNeedsDownload = false;
     //MAIN Loop to create the buttons
     for (var item in listOfFolders) {
+      folderNeedsDownload = false;
+
       String slideshowName = item.titleCase;
+
       List<String> imagePaths =
           await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.images.pathName]);
-
+      print(imagePaths);
       List<String> soundPaths =
           await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.sounds.pathName]);
       List<String> baseAssets = await _firebaseManager.getListOfFilesAtPath(pathComponents: [item]);
+
+      folderNeedsDownload = await needToDownload(slideshowName, imagePaths);
 
       String soundPath = '';
       String fileImagePath = '';
@@ -71,29 +79,29 @@ class LobbyViewModel with ChangeNotifier {
         soundPath = await _firebaseManager.getDownloadUrl(soundPath);
         fileImagePath = await _firebaseManager.getDownloadUrl(fileImagePath);
 
-        //LOADS UP UNIQUE AUDIO PLAYER AND SETS SOURCE
-        final player = AudioPlayer();
-        await player.setPlayerMode(PlayerMode.lowLatency);
-        await player.setSourceUrl(soundPath);
+        Slideshow slideshow;
+        if (!folderNeedsDownload) {
+          slideshow = await _storageManager.readSlideshow(slideshowName: slideshowName);
+        } else {
+          //The items are missing, they will be setup properly after buttons are rendered
+          slideshow = Slideshow(
+            slideshowName: slideshowName,
+            coverImagePath: fileImagePath,
+            coverSoundPath: soundPath,
+          );
 
-        //The items are missing, they will be setup properly after buttons are rendered
-        Slideshow slideshow = Slideshow(
-          slideshowName: slideshowName,
-          coverImagePath: fileImagePath,
-          coverSoundPath: soundPath,
-        );
-        //Creating the slideshowItem to be stored and later processed
-        SlideshowItem slideshowItem = SlideshowItem(name: slideshowName, imageList: imagePaths, soundList: soundPaths);
-        slideshowItems.add(slideshowItem);
-
+          //Creating the slideshowItem to be stored and later processed
+          SlideshowItem slideshowItem =
+              SlideshowItem(name: slideshowName, imageList: imagePaths, soundList: soundPaths);
+          slideshowItems.add(slideshowItem);
+        }
         BigButton bigButton = BigButton(
           soundPath: soundPath,
           fileImagePath: fileImagePath,
           name: slideshowName,
           slideshow: slideshow,
-          isLoading: isLoadingButton,
+          isLoading: (folderNeedsDownload) ? isLoadingButton : !isLoadingButton,
           textColor: UniqueColorGenerator.getColor(),
-          player: player,
         );
 
         listOfButtons.add(bigButton);
@@ -101,10 +109,13 @@ class LobbyViewModel with ChangeNotifier {
         logger.i('added $slideshowName to library, current library size: ${listOfButtons.length}');
       }
     }
+
     await audioPlayer.stop();
     isLoading = false;
     notifyListeners();
-    await (addSlideshowAndCompleteButtons());
+    if (folderNeedsDownload) {
+      await addSlideshowAndCompleteButtons();
+    }
   }
 
   addSlideshowAndCompleteButtons() async {
@@ -112,6 +123,25 @@ class LobbyViewModel with ChangeNotifier {
       int index = slideshowItems.indexWhere((slideshowElement) => slideshowElement.name == listOfButtons[i].name);
       listOfButtons[i].slideshow?.items =
           await generateItemListObjects(slideshowItems[index].imageList, slideshowItems[index].soundList, i);
+      await _storageManager.writeSlideshow(listOfButtons[i].slideshow!);
+    }
+  }
+
+  Future<bool> needToDownload(String slideshowName, List<String> imageNames) async {
+    Slideshow slideshow = await _storageManager.readSlideshow(slideshowName: slideshowName);
+    try {
+      if (slideshow.slideshowName == null || slideshow.items == null) {
+        print('SLIDESHOW IS NOT STORED');
+        return true;
+      } else if (slideshow.items != null && slideshow.items!.length != imageNames.length) {
+        print('SLIDESHOW FOUND BUT ITEMS DONT MATCH');
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      logger.e('Error with looking up slideshow in local storage $e');
+      return true;
     }
   }
 
@@ -181,7 +211,6 @@ class LobbyViewModel with ChangeNotifier {
       topRightColor: Colors.blue.withOpacity(0.3),
       bottomLeftColor: Colors.purple.withOpacity(0.3),
       textColor: listOfButtons[index].textColor,
-      player: listOfButtons[index].player,
     );
     listOfButtons[index] = bigButton;
     notifyListeners();
@@ -194,4 +223,19 @@ class SlideshowItem {
   List<String> soundList;
 
   SlideshowItem({required this.name, required this.imageList, required this.soundList});
+}
+
+Future<void> testStorage(Item item) async {
+  final fileHandler = FileHandler.instance;
+  try {
+    List<Item> itemFromStorage = await fileHandler.readItems();
+    print('LIST ITEM READ, CURRENTLY FOUND ${itemFromStorage.first.name}');
+  } catch (e) {
+    print('UNABLE TO READ, $e');
+  }
+  await fileHandler.writeItem(item);
+  print('WRITTEN ITEM');
+  List<Item> itemFromStorage = await fileHandler.readItems();
+  print(
+      'LIST ITEM READ AFTER WRITING, CURRENTLY FOUND ${itemFromStorage.first.name}, LENGTH = ${itemFromStorage.length}');
 }

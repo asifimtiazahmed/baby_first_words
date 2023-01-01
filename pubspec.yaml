@@ -39,7 +39,6 @@ dependencies:
   google_mobile_ads: ^2.3.0
   path_provider: ^2.0.11
   http: ^0.13.5
-  archive: ^3.3.5
   liquid_progress_indicator: ^0.4.0
   recase: ^4.1.0
   logger: ^1.1.0
@@ -62,6 +61,7 @@ dependencies:
   #animations:
   lottie: ^2.1.0
   cached_network_image: ^3.2.3
+  shared_preferences: ^2.0.15
 
 
 dev_dependencies:
