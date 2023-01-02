@@ -58,7 +58,6 @@ class LobbyViewModel with ChangeNotifier {
 
       List<String> imagePaths =
           await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.images.pathName]);
-      print(imagePaths);
       List<String> soundPaths =
           await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.sounds.pathName]);
       List<String> baseAssets = await _firebaseManager.getListOfFilesAtPath(pathComponents: [item]);
@@ -131,10 +130,8 @@ class LobbyViewModel with ChangeNotifier {
     Slideshow slideshow = await _storageManager.readSlideshow(slideshowName: slideshowName);
     try {
       if (slideshow.slideshowName == null || slideshow.items == null) {
-        print('SLIDESHOW IS NOT STORED');
         return true;
       } else if (slideshow.items != null && slideshow.items!.length != imageNames.length) {
-        print('SLIDESHOW FOUND BUT ITEMS DONT MATCH');
         return true;
       } else {
         return false;
@@ -229,13 +226,7 @@ Future<void> testStorage(Item item) async {
   final fileHandler = FileHandler.instance;
   try {
     List<Item> itemFromStorage = await fileHandler.readItems();
-    print('LIST ITEM READ, CURRENTLY FOUND ${itemFromStorage.first.name}');
-  } catch (e) {
-    print('UNABLE TO READ, $e');
-  }
+  } catch (e) {}
   await fileHandler.writeItem(item);
-  print('WRITTEN ITEM');
   List<Item> itemFromStorage = await fileHandler.readItems();
-  print(
-      'LIST ITEM READ AFTER WRITING, CURRENTLY FOUND ${itemFromStorage.first.name}, LENGTH = ${itemFromStorage.length}');
 }

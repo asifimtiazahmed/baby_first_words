@@ -1,4 +1,5 @@
 import 'package:baby_f_words/managers/file_handler.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:io';
 
@@ -10,11 +11,17 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'data_manager.dart';
 import 'firebase_auth_manager.dart';
 
-class AppConfig {
-  static Future<void> init() async {
-    WidgetsFlutterBinding.ensureInitialized();
+enum AppFlavor { dev, prod }
 
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+class AppConfig {
+  final AppFlavor flavour = AppFlavor.dev;
+
+  static Future<void> init(AppFlavor flavor) async {
+    WidgetsFlutterBinding.ensureInitialized();
+    if (Platform.isAndroid) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
+    final appFlavor = flavor;
     await Firebase.initializeApp(
       name: 'baby-first-words',
       options: getFirebaseOptions(),
@@ -25,7 +32,20 @@ class AppConfig {
       final authManager = GetIt.I<FirebaseAuthManager>();
       GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
+      instantiateAppCheck();
     });
+  }
+
+  static instantiateAppCheck() async {
+    await FirebaseAppCheck.instance.activate(
+      webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+      // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
+      // your preferred provider. Choose from:
+      // 1. debug provider
+      // 2. safety net provider
+      // 3. play integrity provider
+      androidProvider: AndroidProvider.debug,
+    );
   }
 
   static FirebaseOptions getFirebaseOptions() {

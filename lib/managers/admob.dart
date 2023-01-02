@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:baby_f_words/managers/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -24,11 +25,15 @@ class AdMobService {
 
   String getBannerAdId() {
     if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/2934735716'; //Test App
-      return 'ca-app-pub-9426901076429008~6973923729'; //Prod
+      return AppConfig().flavour == AppFlavor.dev
+          ? 'ca-app-pub-3940256099942544/2934735716'
+          : //Test App
+          'ca-app-pub-9426901076429008~6973923729'; //Prod
     } else if (Platform.isAndroid) {
       //return 'ca-app-pub-9426901076429008/4863013129'; //Change this key for production release
-      return 'ca-app-pub-3940256099942544/6300978111'; // Test app admob
+      return AppConfig().flavour == AppFlavor.dev
+          ? 'ca-app-pub-3940256099942544/6300978111' // Test app admob
+          : 'ca-app-pub-9426901076429008/4863013129';
     }
     return 'platform not supported';
   }
