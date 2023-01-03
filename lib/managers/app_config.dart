@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:baby_f_words/managers/file_handler.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +22,26 @@ class AppConfig {
     if (Platform.isAndroid) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
+//TO Set the iPhone's speakers to say the sound externally instead of the earpiece
+    final AudioContext audioContext = AudioContext(
+      iOS: AudioContextIOS(
+        defaultToSpeaker: true,
+        category: AVAudioSessionCategory.ambient,
+        options: [
+          AVAudioSessionOptions.defaultToSpeaker,
+          AVAudioSessionOptions.mixWithOthers,
+        ],
+      ),
+      android: AudioContextAndroid(
+        isSpeakerphoneOn: true,
+        stayAwake: true,
+        contentType: AndroidContentType.sonification,
+        usageType: AndroidUsageType.assistanceSonification,
+        audioFocus: AndroidAudioFocus.none,
+      ),
+    );
+    AudioPlayer.global.setGlobalAudioContext(audioContext);
+
     final appFlavor = flavor;
     await Firebase.initializeApp(
       name: 'baby-first-words',
@@ -33,6 +54,8 @@ class AppConfig {
       GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
       instantiateAppCheck();
+      //Setting AppFlavour
+      GetIt.I<DataManager>().flavor = appFlavor;
     });
   }
 

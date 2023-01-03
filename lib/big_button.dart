@@ -21,6 +21,7 @@ class BigButton extends StatelessWidget {
   ///If you want to show a progress indication that the slideshow is still loading, note this as yes
   final bool isLoading;
   final Function? onTap;
+  //final double? volume;
 
   const BigButton({
     super.key,
@@ -35,6 +36,7 @@ class BigButton extends StatelessWidget {
     this.textColor,
     this.soundSource,
     this.onTap,
+    // this.volume,
   });
 
   @override
@@ -94,7 +96,10 @@ class BigButton extends StatelessWidget {
                   }
                   final newPlayer = AudioPlayer();
                   await newPlayer
-                      .play(UrlSource(soundPath), mode: PlayerMode.lowLatency)
+                      .play(
+                        UrlSource(soundPath),
+                        mode: PlayerMode.lowLatency,
+                      )
                       .whenComplete(() => Navigator.push(
                             context,
                             MaterialPageRoute(

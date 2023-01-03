@@ -82,6 +82,7 @@ class LobbyView extends StatelessWidget {
               : Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   height: 52.0,
+                  width: MediaQuery.of(context).size.width,
                   child: AdWidget(
                     ad: vm.banner!,
                   ),

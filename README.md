@@ -49,4 +49,7 @@ re-write this app, and also have it get included for iOS.
     a) "Memory Match" Memory Match Game (matching gives affirmations "You did it!", "Well done!", "Uh Oh!", "Try Again!")
     b) "Pick The Correct One" An item is randomly selected and its sound is spoken, then 4 tiles come up that includes that item image and 3 others. The baby has to pick the right tile to win.
     
+## NOTE:
+The package name in xcode is different than the rest of the project because Apple was not recognizing the app id before.
+
 

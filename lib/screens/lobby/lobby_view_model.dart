@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/managers/data_manager.dart';
-import 'package:baby_f_words/managers/file_handler.dart';
 import 'package:baby_f_words/managers/firebase_storage_manager.dart';
 import 'package:baby_f_words/managers/local_storage_manager.dart';
 import 'package:baby_f_words/models/items.dart';
@@ -208,6 +207,7 @@ class LobbyViewModel with ChangeNotifier {
       topRightColor: Colors.blue.withOpacity(0.3),
       bottomLeftColor: Colors.purple.withOpacity(0.3),
       textColor: listOfButtons[index].textColor,
+      //volume: listOfButtons[index].volume, //max
     );
     listOfButtons[index] = bigButton;
     notifyListeners();
@@ -220,13 +220,4 @@ class SlideshowItem {
   List<String> soundList;
 
   SlideshowItem({required this.name, required this.imageList, required this.soundList});
-}
-
-Future<void> testStorage(Item item) async {
-  final fileHandler = FileHandler.instance;
-  try {
-    List<Item> itemFromStorage = await fileHandler.readItems();
-  } catch (e) {}
-  await fileHandler.writeItem(item);
-  List<Item> itemFromStorage = await fileHandler.readItems();
 }
