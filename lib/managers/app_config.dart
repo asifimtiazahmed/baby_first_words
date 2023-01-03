@@ -53,7 +53,7 @@ class AppConfig {
       final authManager = GetIt.I<FirebaseAuthManager>();
       GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
-      instantiateAppCheck();
+      //instantiateAppCheck(); TODO: Fix this
       //Setting AppFlavour
       GetIt.I<DataManager>().flavor = appFlavor;
     });
