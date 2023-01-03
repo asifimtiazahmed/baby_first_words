@@ -26,7 +26,7 @@ class AppConfig {
     final AudioContext audioContext = AudioContext(
       iOS: AudioContextIOS(
         defaultToSpeaker: true,
-        category: AVAudioSessionCategory.ambient,
+        category: AVAudioSessionCategory.playback,
         options: [
           AVAudioSessionOptions.defaultToSpeaker,
           AVAudioSessionOptions.mixWithOthers,
@@ -35,9 +35,9 @@ class AppConfig {
       android: AudioContextAndroid(
         isSpeakerphoneOn: true,
         stayAwake: true,
-        contentType: AndroidContentType.sonification,
+        contentType: AndroidContentType.music,
         usageType: AndroidUsageType.assistanceSonification,
-        audioFocus: AndroidAudioFocus.none,
+        audioFocus: AndroidAudioFocus.gain,
       ),
     );
     AudioPlayer.global.setGlobalAudioContext(audioContext);

@@ -29,8 +29,8 @@ class LobbyViewModel with ChangeNotifier {
   BannerAd? banner;
 
   LobbyViewModel() {
-    createBannerAd();
     init();
+    createBannerAd();
   }
 
   createBannerAd() {
