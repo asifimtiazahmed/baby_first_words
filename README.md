@@ -45,9 +45,12 @@ This version is more stable then the first time I created it. It has taken me a 
 re-write this app, and also have it get included for iOS. 
 
 ## IDEAS FOR VERSION 3
+-> Add new assets (Bangla (shorborno, banjon borno, objects, numbers, colors), English (colors))
 -> A skippable interstitial ad comes, then We can have a games section where you pick the lobby card and a game comes with it
     a) "Memory Match" Memory Match Game (matching gives affirmations "You did it!", "Well done!", "Uh Oh!", "Try Again!")
     b) "Pick The Correct One" An item is randomly selected and its sound is spoken, then 4 tiles come up that includes that item image and 3 others. The baby has to pick the right tile to win.
+-> Should be able to launch from codemagic for both apple and android upod merging with prod
+
     
 ## NOTE:
 The package name in xcode is different than the rest of the project because Apple was not recognizing the app id before.
