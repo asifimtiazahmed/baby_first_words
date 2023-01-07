@@ -67,7 +67,10 @@ class SlideShowViewModel with ChangeNotifier {
   Future<void> playSound() async {
     AudioPlayer player = AudioPlayer();
     if (volumeStatus) {
-      await player.play(UrlSource(slideshow!.items![itemIndex].soundPath!), mode: PlayerMode.lowLatency);
+      await player.play(
+        UrlSource(slideshow!.items![itemIndex].soundPath!),
+        mode: PlayerMode.lowLatency,
+      );
     }
   }
 }

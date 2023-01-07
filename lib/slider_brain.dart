@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import 'models/items.dart';
 import 'library_list.dart';
 import 'dart:io';
@@ -69,6 +71,6 @@ class SliderMain {
   }
 
   void setIndex(int indexNo) {
-    (indexNo != null && indexNo <= maxIndex && indexNo >= 0) ? index = indexNo : print('index no $indexNo is invalid');
+    (indexNo <= maxIndex && indexNo >= 0) ? index = indexNo : debugPrint('index no $indexNo is invalid');
   }
 }
