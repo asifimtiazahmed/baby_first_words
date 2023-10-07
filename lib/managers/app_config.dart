@@ -23,9 +23,9 @@ class AppConfig {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
 //TO Set the iPhone's speakers to say the sound externally instead of the earpiece
-    final AudioContext audioContext = AudioContext(
+    const AudioContext audioContext = AudioContext(
       iOS: AudioContextIOS(
-        defaultToSpeaker: true,
+        // defaultToSpeaker: true,
         category: AVAudioSessionCategory.playback,
         options: [
           AVAudioSessionOptions.defaultToSpeaker,
@@ -40,7 +40,7 @@ class AppConfig {
         audioFocus: AndroidAudioFocus.gain,
       ),
     );
-    AudioPlayer.global.setGlobalAudioContext(audioContext);
+    AudioPlayer.global.setAudioContext(audioContext);
 
     final appFlavor = flavor;
     await Firebase.initializeApp(
