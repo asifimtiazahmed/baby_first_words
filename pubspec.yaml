@@ -5,36 +5,20 @@ description: Baby First Words
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-version: 2.1.0+3 #+3 erased this +3 it seemed to read to google play as the main version number
+
+version: 2.3.0+5 #+4 erased this +4 it seemed to read to google play as the main version number
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
+
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.6
   google_fonts: ^4.0.4
-  audioplayers: ^5.1.0
+  audioplayers: ^5.2.0
   flutter_custom_clippers: ^2.1.0
   google_mobile_ads: ^3.0.0
   path_provider: ^2.1.1
@@ -46,11 +30,11 @@ dependencies:
 
 
   #Firebase Dependencies
-  firebase_core: ^2.16.0
+  firebase_core: ^2.17.0
   firebase: ^9.0.3
-  firebase_auth: ^4.10.0
-  cloud_firestore: ^4.9.2  #https://pub.dev/packages/cloud_firestore/install
-  firebase_storage: ^11.2.7
+  firebase_auth: ^4.10.1
+  cloud_firestore: ^4.9.3  #https://pub.dev/packages/cloud_firestore/install
+  firebase_storage: ^11.4.0
   firebase_analytics_web: ^0.5.5 #https://pub.dev/packages/firebase_analytics/install
   firebase_analytics: ^10.5.0
 
@@ -65,7 +49,7 @@ dependencies:
   lottie: ^2.6.0
   cached_network_image: ^3.2.3
   shared_preferences: ^2.2.1
-  firebase_app_check: ^0.1.5+2
+  firebase_app_check: ^0.2.1+2
 
 
 dev_dependencies:
