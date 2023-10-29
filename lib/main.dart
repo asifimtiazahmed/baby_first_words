@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  await AppConfig.init(AppFlavor.prod);
+  await AppConfig.init(AppFlavor.dev);
   runApp(const FirstWords());
 }
 

@@ -18,21 +18,10 @@ class LobbyView extends StatelessWidget {
       create: (_) => LobbyViewModel(),
       child: Consumer<LobbyViewModel>(
         builder: (context, vm, _) => Scaffold(
-          body: Container(
+          body:
+          Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  vm.isLoading ? Colors.white : const Color(0xFFfad3fb),
-                  vm.isLoading ? Colors.white : const Color(0xFFCBC3E3),
-                  //vm.isLoading ? Colors.white : const Color(0xFFb46adf),
-                  //vm.isLoading ? Colors.white : const Color(0xFF863dd6),
-                  //vm.isLoading ? Colors.white : const Color(0xFF6221d1),
-                  // vm.isLoading ? Colors.white : const Color(0xFF863dd6),
-                  vm.isLoading ? Colors.white : const Color(0xFFb46adf),
-                ],
-              ),
+              image: vm.isLoading ? null : const DecorationImage(image: AssetImage(Assets.babyMoon), fit: BoxFit.cover, alignment: Alignment.center),
             ),
             child: SafeArea(
               child: vm.isLoading
@@ -52,7 +41,7 @@ class LobbyView extends StatelessWidget {
                         Lottie.asset(Assets.rainbow),
                       ],
                     ))
-                  : //
+                  : vm.listOfFolders.isNotEmpty ?
                   Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.count(
@@ -74,7 +63,10 @@ class LobbyView extends StatelessWidget {
                           ...vm.listOfButtons,
                         ],
                       ),
-                    ),
+                    ) : const Center(child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('Please Check Internet Connectivity or Restart the App', style: kBasicTextStyle,),
+                    ),),
             ),
           ),
           bottomNavigationBar: vm.banner == null

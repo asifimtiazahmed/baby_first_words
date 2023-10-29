@@ -23,9 +23,9 @@ class AppConfig {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
 //TO Set the iPhone's speakers to say the sound externally instead of the earpiece
-    final AudioContext audioContext = AudioContext(
+    const AudioContext audioContext = AudioContext(
       iOS: AudioContextIOS(
-        defaultToSpeaker: true,
+        // defaultToSpeaker: true,
         category: AVAudioSessionCategory.playback,
         options: [
           AVAudioSessionOptions.defaultToSpeaker,
@@ -40,7 +40,7 @@ class AppConfig {
         audioFocus: AndroidAudioFocus.gain,
       ),
     );
-    AudioPlayer.global.setGlobalAudioContext(audioContext);
+    AudioPlayer.global.setAudioContext(audioContext);
 
     final appFlavor = flavor;
     await Firebase.initializeApp(
@@ -53,7 +53,7 @@ class AppConfig {
       final authManager = GetIt.I<FirebaseAuthManager>();
       GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
-      //instantiateAppCheck(); TODO: Fix this
+      instantiateAppCheck();
       //Setting AppFlavour
       GetIt.I<DataManager>().flavor = appFlavor;
     });
@@ -61,13 +61,14 @@ class AppConfig {
 
   static instantiateAppCheck() async {
     await FirebaseAppCheck.instance.activate(
-      webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+      webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
       // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
       // your preferred provider. Choose from:
       // 1. debug provider
       // 2. safety net provider
       // 3. play integrity provider
-      androidProvider: AndroidProvider.debug,
+      androidProvider: AndroidProvider.playIntegrity,
+      appleProvider: AppleProvider.deviceCheck,
     );
   }
 

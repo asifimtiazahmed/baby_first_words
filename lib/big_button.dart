@@ -1,4 +1,5 @@
 import 'package:baby_f_words/constants.dart';
+import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/models/slideshow.dart';
 import 'package:baby_f_words/random_color_generator.dart';
 import 'package:baby_f_words/screens/slideshow/slideshow_view.dart';
@@ -44,10 +45,10 @@ class BigButton extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white, boxShadow: [
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white60, boxShadow: [
             if (topRightColor == null && bottomLeftColor == null)
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.black54.withOpacity(0.3),
                 spreadRadius: 5,
                 blurRadius: 7,
                 offset: const Offset(0, 3), // changes position of shadow
@@ -68,26 +69,33 @@ class BigButton extends StatelessWidget {
               ),
           ]),
           child: TextButton(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    flex: 4,
-                    child: Container(
-                      constraints: const BoxConstraints.expand(),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(image: NetworkImage(fileImagePath), fit: BoxFit.scaleDown),
+              child: Stack(
+                children:[
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                   // child: Image.asset(Assets.butterflies, fit: BoxFit.fill,),
+                  ),
+                  Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Container(
+                        constraints: const BoxConstraints.expand(),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(image: NetworkImage(fileImagePath), fit: BoxFit.scaleDown),
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      name ?? ' ',
-                      style: spicyRice.copyWith(fontSize: 20, color: textColor ?? UniqueColorGenerator.getColor()),
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        name ?? ' ',
+                        style: spicyRice.copyWith(fontSize: 20, color: textColor ?? UniqueColorGenerator.getColor()),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),]
               ),
               onPressed: () async {
                 if (slideshow != null && !isLoading) {
