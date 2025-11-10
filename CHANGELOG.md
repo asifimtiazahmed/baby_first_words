@@ -1,3 +1,7 @@
+# November 9th 2025 Version
+## _Update_
+* Updating all the dependencies
+* 
 # October 28th 2023 Version 2.3.0+5
 ## _UPDATE_ 
 * The app downloads the list of objects in the beginning, so there is a loading happening.

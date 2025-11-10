@@ -1,21 +1,18 @@
-buildscript {
-    ext.kotlin_version = '1.6.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20"
-        classpath 'com.google.gms:google-services:4.3.13'
-    }
+plugins {
+    // Flutter adds this on the classpath; do NOT add a version here.
+    id "dev.flutter.flutter-plugin-loader" apply false
+
+    // Use the version already on the classpath (8.3.0). No version here.
+    id "com.android.application" apply false
+
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://storage.googleapis.com/download.flutter.io" }
     }
 }
 
@@ -30,3 +27,6 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+
+
