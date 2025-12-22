@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/screens/lobby/lobby_view_model.dart';
 
+import 'package:baby_f_words/app_theme.dart';
 import 'package:baby_f_words/constants.dart';
 
 class LobbyView extends StatelessWidget {
@@ -18,10 +19,14 @@ class LobbyView extends StatelessWidget {
       create: (_) => LobbyViewModel(),
       child: Consumer<LobbyViewModel>(
         builder: (context, vm, _) => Scaffold(
-          body:
-          Container(
+          body: Container(
             decoration: BoxDecoration(
-              image: vm.isLoading ? null : const DecorationImage(image: AssetImage(Assets.babyMoon), fit: BoxFit.cover, alignment: Alignment.center),
+              image: vm.isLoading
+                  ? null
+                  : const DecorationImage(
+                      image: AssetImage(Assets.babyMoon),
+                      fit: BoxFit.cover,
+                      alignment: Alignment.center),
             ),
             child: SafeArea(
               child: vm.isLoading
@@ -31,42 +36,50 @@ class LobbyView extends StatelessWidget {
                       children: [
                         Text(
                           'Baby First Words',
-                          style: spicyRice,
+                          style: AppTextStyles.display,
                         ),
                         Text(
                           'Loading...',
-                          style: spicyRice.copyWith(fontSize: 25),
+                          style: AppTextStyles.header.copyWith(fontSize: 25),
                         ),
                         const SizedBox(height: 15),
                         Lottie.asset(Assets.rainbow),
                       ],
                     ))
-                  : vm.listOfFolders.isNotEmpty ?
-                  Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1,
-                        scrollDirection: Axis.vertical,
-                        crossAxisSpacing: 20,
-                        mainAxisSpacing: 20,
-                        children: [
-                          Center(
-                              child: Text(
-                            'Baby First ',
-                            style: spicyRice,
-                            textAlign: TextAlign.end,
-                          )),
-                          Center(
-                            child: Text('Words', style: spicyRice, textAlign: TextAlign.start),
+                  : vm.listOfFolders.isNotEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.85,
+                            scrollDirection: Axis.vertical,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            children: [
+                              Center(
+                                  child: Text(
+                                'Baby First ',
+                                style: AppTextStyles.display.copyWith(fontSize: 42),
+                                textAlign: TextAlign.end,
+                              )),
+                              Center(
+                                child: Text('Words',
+                                    style: AppTextStyles.display.copyWith(fontSize: 42),
+                                    textAlign: TextAlign.start),
+                              ),
+                              ...vm.listOfButtons,
+                            ],
                           ),
-                          ...vm.listOfButtons,
-                        ],
-                      ),
-                    ) : const Center(child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('Please Check Internet Connectivity or Restart the App', style: kBasicTextStyle,),
-                    ),),
+                        )
+                      : const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Please Check Internet Connectivity or Restart the App',
+                              style: kBasicTextStyle,
+                            ),
+                          ),
+                        ),
             ),
           ),
           bottomNavigationBar: vm.banner == null

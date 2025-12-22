@@ -16,12 +16,12 @@ class SlideShowViewModel with ChangeNotifier {
     createBannerAd();
   }
 
-  toggleVolumeStatus() {
+  void toggleVolumeStatus() {
     volumeStatus = !volumeStatus;
     notifyListeners();
   }
 
-  createBannerAd() {
+  void createBannerAd() {
     banner = BannerAd(
         size: AdSize.fullBanner,
         adUnitId: AdMobService().getBannerAdId(),
@@ -71,6 +71,15 @@ class SlideShowViewModel with ChangeNotifier {
         UrlSource(slideshow!.items![itemIndex].soundPath!),
         mode: PlayerMode.lowLatency,
       );
+    }
+  }
+
+  void precacheImages(BuildContext context) {
+    if (slideshow?.items == null) return;
+    for (var item in slideshow!.items!) {
+      if (item.imagePath != null) {
+        precacheImage(NetworkImage(item.imagePath!), context);
+      }
     }
   }
 }

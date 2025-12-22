@@ -1,26 +1,41 @@
+import 'package:baby_f_words/app_theme.dart';
 import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/models/slideshow.dart';
+import 'package:baby_f_words/random_color_generator.dart';
+import 'package:baby_f_words/screens/games/match_game_view.dart';
+import 'package:baby_f_words/screens/games/pick_game_view.dart';
 import 'package:baby_f_words/screens/slideshow/slideshow_view_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import 'package:baby_f_words/constants.dart';
-import 'package:baby_f_words/random_color_generator.dart';
-
-class SlideshowView extends StatelessWidget {
-  const SlideshowView({Key? key, this.slideshow}) : super(key: key);
+class SlideshowView extends StatefulWidget {
   final Slideshow? slideshow;
+  const SlideshowView({super.key, this.slideshow});
+
+  @override
+  State<SlideshowView> createState() => _SlideshowViewState();
+}
+
+class _SlideshowViewState extends State<SlideshowView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<SlideShowViewModel>(context, listen: false).precacheImages(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
-      create: (_) => SlideShowViewModel(slideshow: slideshow),
+      create: (_) => SlideShowViewModel(slideshow: widget.slideshow),
       child: Consumer<SlideShowViewModel>(
         builder: (context, vm, _) => Scaffold(
           appBar: AppBar(
@@ -29,8 +44,7 @@ class SlideshowView extends StatelessWidget {
               children: [
                 Text(
                   'Baby First Words',
-                  style: GoogleFonts.spicyRice(
-                      textStyle: const TextStyle(letterSpacing: 1.2, fontSize: 25, color: Colors.black87)),
+                  style: AppTextStyles.header.copyWith(letterSpacing: 1.2, fontSize: 25, color: Colors.black87),
                 ),
                 ElevatedButton(child: volume(vm.volumeStatus), onPressed: () => vm.toggleVolumeStatus()),
               ],
@@ -55,14 +69,14 @@ class SlideshowView extends StatelessWidget {
                           children: [
                             Text(
                               vm.slideshow!.slideshowName ?? '',
-                              style: GoogleFonts.spicyRice(
-                                textStyle: kGoogleStyle,
-                              ),
+                              style: AppTextStyles.header.copyWith(fontSize: 32, letterSpacing: 1.2),
                             ),
                             Text(
                               vm.slideshow!.items?[vm.itemIndex].name?.toUpperCase() ?? '',
-                              style: GoogleFonts.spicyRice(
-                                textStyle: kGoogleStyle.copyWith(color: UniqueColorGenerator.getColor()),
+                              style: AppTextStyles.header.copyWith(
+                                fontSize: 32,
+                                letterSpacing: 1.2,
+                                color: UniqueColorGenerator.getColor(),
                               ),
                             ),
                           ],
@@ -71,7 +85,7 @@ class SlideshowView extends StatelessWidget {
                     ),
                   ), // Name of Library + Current Name
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Stack(alignment: AlignmentDirectional.topCenter, children: [
                       GestureDetector(
                         onHorizontalDragEnd: (details) {
@@ -102,7 +116,7 @@ class SlideshowView extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                   Lottie.asset(Assets.fruitLoader),
-                                  Text('Loading...', style: spicyRice)
+                                  Text('Loading...', style: AppTextStyles.header)
                                 ])),
                           ),
                           errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -124,67 +138,111 @@ class SlideshowView extends StatelessWidget {
                   ),
                   Expanded(
                     flex: 2,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        TextButton(
-                            child: ClipPath(
-                              clipper: ArrowClipper(70, 90, Edge.LEFT),
-                              child: Container(
-                                height: 120,
-                                width: 150, //this is the size I specified for each of the carousal pictures,
-                                color: Colors.orange,
-                                child: Center(
-                                  child: Text(
-                                    "Previous",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.spicyRice(
-                                      textStyle: kGoogleStyle.copyWith(color: Colors.black54, fontSize: 25),
+                        //NEXT AND PREVIOUS BUTTONS
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                                child: ClipPath(
+                                  clipper: ArrowClipper(70, 90, Edge.LEFT),
+                                  child: Container(
+                                    height: 120,
+                                    width: 150, //this is the size I specified for each of the carousal pictures,
+                                    color: AppColors.sunnyYellow,
+                                    child: Center(
+                                      child: Text(
+                                        "Previous",
+                                        textAlign: TextAlign.center,
+                                        style: AppTextStyles.header.copyWith(fontSize: 25, color: Colors.black54),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            onLongPress: () {
-                              Duration delay = const Duration(seconds: 2);
-                              Future.delayed((delay), () {
-                                vm.prevCallback();
-                              });
-                            },
-                            onPressed: () {
-                              vm.prevCallback();
-                            }),
-                        TextButton(
-                            child: ClipPath(
-                              clipper: ArrowClipper(70, 90, Edge.RIGHT),
-                              child: Container(
-                                height: 120,
-                                width: 150,
-                                color: Colors.green,
-                                child: Center(
-                                  child: Text(
-                                    "Next",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.spicyRice(
-                                      textStyle: kGoogleStyle.copyWith(color: Colors.black54, fontSize: 25),
+                                onLongPress: () {
+                                  Duration delay = const Duration(seconds: 2);
+                                  Future.delayed((delay), () {
+                                    vm.prevCallback();
+                                  });
+                                },
+                                onPressed: () {
+                                  vm.prevCallback();
+                                }),
+                            TextButton(
+                                child: ClipPath(
+                                  clipper: ArrowClipper(70, 90, Edge.RIGHT),
+                                  child: Container(
+                                    height: 120,
+                                    width: 150,
+                                    color: AppColors.grassGreen,
+                                    child: Center(
+                                      child: Text(
+                                        "Next",
+                                        textAlign: TextAlign.center,
+                                        style: AppTextStyles.header.copyWith(fontSize: 25, color: Colors.black54),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                onLongPress: () {
+                                  Duration delay = const Duration(seconds: 2);
+                                  Future.delayed((delay), () {
+                                    vm.nextCallback();
+                                  });
+                                },
+                                onPressed: () {
+                                  vm.nextCallback();
+                                }),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        // Game Buttons
+                        Row(children: [
+                          // Play Pick the Correct
+                          Expanded(
+                            child: _gameButton(
+                              context,
+                              label: "Play Pick the Correct\n${vm.slideshow?.slideshowName ?? ''}",
+                              color: AppColors.candyPink,
+                              onPressed: () {
+                                if (vm.slideshow != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PickGameView(slideshow: vm.slideshow!),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
-                            onLongPress: () {
-                              Duration delay = const Duration(seconds: 2);
-                              Future.delayed((delay), () {
-                                vm.nextCallback();
-                              });
-                            },
-                            onPressed: () {
-                              vm.nextCallback();
-                            }),
+                          ),
+                          const SizedBox(width: 20),
+                          // Play Match the Words
+                          Expanded(
+                            child: _gameButton(
+                              context,
+                              label: "Play Match the\n${vm.slideshow?.slideshowName ?? ''}",
+                              color: AppColors.skyBlue,
+                              onPressed: () {
+                                if (vm.slideshow != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MatchGameView(slideshow: vm.slideshow!),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ]),
+
+                        const SizedBox(height: 12),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 12),
                   // Expanded(
                   //   flex: 4,
                   //   child: Padding(
@@ -225,5 +283,41 @@ class SlideshowView extends StatelessWidget {
     } else {
       return const Icon(Icons.volume_off);
     }
+  }
+
+  Widget _gameButton(BuildContext context,
+      {required String label, required Color color, required VoidCallback onPressed}) {
+    return Container(
+      height: 80,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            offset: const Offset(0, 4),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.header.copyWith(fontSize: 20, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -5,12 +5,14 @@ import 'package:baby_f_words/managers/file_handler.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'data_manager.dart';
 import 'firebase_auth_manager.dart';
+import 'firebase_options.dart';
 
 enum AppFlavor { dev, prod }
 
@@ -27,7 +29,7 @@ class AppConfig {
       iOS: AudioContextIOS(
         // defaultToSpeaker: true,
         category: AVAudioSessionCategory.playback,
-        options: const {AVAudioSessionOptions.defaultToSpeaker, AVAudioSessionOptions.mixWithOthers},
+        options: const {AVAudioSessionOptions.mixWithOthers},
       ),
       android: AudioContextAndroid(
         isSpeakerphoneOn: true,
@@ -61,38 +63,8 @@ class AppConfig {
       // 1. debug provider
       // 2. safety net provider
       // 3. play integrity provider
-      providerAndroid: AndroidPlayIntegrityProvider(),
-      providerApple: AppleDeviceCheckProvider(),
+      providerAndroid: kDebugMode ? AndroidDebugProvider() : AndroidPlayIntegrityProvider(),
+      providerApple: kDebugMode ? AppleDebugProvider() : AppleDeviceCheckProvider(),
     );
-  }
-
-  static FirebaseOptions getFirebaseOptions() {
-    if (Platform.isAndroid) {
-      debugPrint('Platform Android:');
-      return const FirebaseOptions(
-        apiKey: 'AIzaSyAH00desxSSlf1JLPAQ2CM1MfFhun-gkq4',
-        appId: '1:552182376999:android:a1699a094af709b387fc02',
-        messagingSenderId: '552182376999',
-        projectId: 'baby-first-words',
-      );
-    } else if (Platform.isIOS) {
-      debugPrint('Platform iOS:');
-      return const FirebaseOptions(
-        apiKey: 'AIzaSyBFdGjMalkM3RusoE6xsBPBecTiB304Jls',
-        appId: '1:552182376999:ios:f9a721267735460987fc02',
-        messagingSenderId: '552182376999',
-        storageBucket: 'baby-first-words.appspot.com',
-        iosClientId: '552182376999-8oufte41p4f2oevkvht5runps9c3aoso.apps.googleusercontent.com',
-        projectId: 'baby-first-words',
-      );
-    } else {
-      debugPrint('Un supported platform for firebase options');
-      return const FirebaseOptions(
-        apiKey: 'AIzaSyAH00desxSSlf1JLPAQ2CM1MfFhun-gkq4',
-        appId: '1:552182376999:android:a1699a094af709b387fc02',
-        messagingSenderId: '552182376999',
-        projectId: 'baby-first-words',
-      );
-    }
   }
 }

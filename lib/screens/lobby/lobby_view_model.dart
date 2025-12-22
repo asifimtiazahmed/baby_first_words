@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:baby_f_words/app_theme.dart';
 import 'package:baby_f_words/big_button.dart';
 import 'package:baby_f_words/constants.dart';
 import 'package:baby_f_words/managers/admob.dart';
@@ -104,13 +105,18 @@ class LobbyViewModel with ChangeNotifier {
             );
             slideshowItems.add(slideshowItem);
           }
+          // Assign consistent colors based on index
+          int colorIndex = listOfButtons.length % AppColors.cardColors.length;
+          Color buttonColor = AppColors.cardColors[colorIndex];
+
           BigButton bigButton = BigButton(
             soundPath: soundPath,
             fileImagePath: fileImagePath,
             name: slideshowName,
             slideshow: slideshow,
             isLoading: (folderNeedsDownload) ? isLoadingButton : !isLoadingButton,
-            textColor: Colors.black54, //UniqueColorGenerator.getColor(),
+            topRightColor: buttonColor,
+            textColor: Colors.white, // White text looks better on vibrant colors
           );
 
           listOfButtons.add(bigButton);
@@ -207,9 +213,12 @@ class LobbyViewModel with ChangeNotifier {
     return generateItems;
   }
 
-  updateButton(int index, double percentage) {
+  void updateButton(int index, double percentage) {
     listOfButtons[index];
     bool isLoading = percentage != 1 ? true : false;
+    int colorIndex = index % AppColors.cardColors.length;
+    Color buttonColor = AppColors.cardColors[colorIndex];
+    
     BigButton bigButton = BigButton(
       name: listOfButtons[index].name,
       soundPath: listOfButtons[index].soundPath,
@@ -217,10 +226,8 @@ class LobbyViewModel with ChangeNotifier {
       isLoading: isLoading,
       progressValue: percentage,
       slideshow: listOfButtons[index].slideshow,
-      topRightColor: Colors.blue.withOpacity(0.3),
-      bottomLeftColor: Colors.purple.withOpacity(0.3),
-      textColor: Colors.black54, //listOfButtons[index].textColor,
-      //volume: listOfButtons[index].volume, //max
+      topRightColor: buttonColor,
+      textColor: Colors.white,
     );
     listOfButtons[index] = bigButton;
     notifyListeners();
