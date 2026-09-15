@@ -6,7 +6,7 @@ plugins {
     id "com.google.firebase.crashlytics"
 
 }
-ext.kotlin_version = '1.9.24'
+ext.kotlin_version = '2.3.0'
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -35,16 +35,16 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace 'com.weaveio.flutter_first_words'
     compileSdkVersion 36
-    ndkVersion "28.0.12433566" //Google 16KB Page
+    ndkVersion "28.2.13676358"
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
         //Adding desugaring for java version
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
