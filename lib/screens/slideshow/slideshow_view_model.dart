@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:baby_f_words/managers/admob.dart';
+import 'package:baby_f_words/managers/audio_cache_manager.dart';
 import 'package:baby_f_words/models/slideshow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -11,6 +13,7 @@ class SlideShowViewModel with ChangeNotifier {
   Slideshow? slideshow;
   int itemIndex = 0;
   BannerAd? banner;
+  final AudioPlayer _player = AudioPlayer();
 
   SlideShowViewModel({this.slideshow}) {
     createBannerAd();
@@ -65,12 +68,23 @@ class SlideShowViewModel with ChangeNotifier {
   }
 
   Future<void> playSound() async {
-    AudioPlayer player = AudioPlayer();
-    if (volumeStatus) {
-      await player.play(
-        UrlSource(slideshow!.items![itemIndex].soundPath!),
-        mode: PlayerMode.lowLatency,
-      );
+    if (volumeStatus && slideshow?.items != null && itemIndex < slideshow!.items!.length) {
+      final rawPath = slideshow!.items![itemIndex].soundPath;
+      if (rawPath != null && rawPath.isNotEmpty) {
+        final localPath = await AudioCacheManager.instance.getLocalAudioPath(rawPath);
+        Source? source;
+        if (File(localPath).existsSync()) {
+          source = DeviceFileSource(localPath);
+        } else if (localPath.startsWith('http://') || localPath.startsWith('https://')) {
+          source = UrlSource(localPath);
+        } else if (rawPath.startsWith('http://') || rawPath.startsWith('https://')) {
+          source = UrlSource(rawPath);
+        }
+        if (source != null) {
+          await _player.stop();
+          await _player.play(source, mode: PlayerMode.lowLatency);
+        }
+      }
     }
   }
 
@@ -81,5 +95,12 @@ class SlideShowViewModel with ChangeNotifier {
         precacheImage(NetworkImage(item.imagePath!), context);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    banner?.dispose();
+    _player.dispose();
+    super.dispose();
   }
 }

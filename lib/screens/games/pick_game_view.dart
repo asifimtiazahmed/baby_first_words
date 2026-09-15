@@ -5,7 +5,7 @@ import 'package:baby_f_words/screens/games/pick_game_view_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:baby_f_words/widgets/confetti_card.dart';
+import 'package:baby_f_words/widgets/animated_scale_card.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -76,10 +76,8 @@ class PickGameView extends StatelessWidget {
               mainAxisSpacing: 20,
               crossAxisSpacing: 20,
               children: vm.currentOptions.map((item) {
-                final isCorrect = item == vm.correctItem;
-                return ConfettiCard(
-                  key: ValueKey(item.name), // Important to identify correct card across rebuilds if needed
-                  isCorrect: isCorrect,
+                return AnimatedScaleCard(
+                  key: ValueKey(item.name),
                   onTap: () => vm.onItemTapped(item),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),

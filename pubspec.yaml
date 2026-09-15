@@ -6,7 +6,7 @@ description: Baby First Words
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 2.4.0+002
+version: 2.4.2+003
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -17,24 +17,25 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  google_fonts: ^6.3.2
-  audioplayers: ^6.5.1
+  google_fonts: ^8.2.1
+  audioplayers: ^6.8.1
   flutter_custom_clippers: ^2.1.0
-  google_mobile_ads: ^6.0.0
+  google_mobile_ads: ^8.0.0
   path_provider: ^2.1.5
-  package_info_plus: ^9.0.0
+  package_info_plus: ^10.2.1
   liquid_progress_indicator: ^0.4.0
   recase: ^4.1.0
   logger: ^2.6.2
   equatable: ^2.0.7
+  json_annotation: ^4.9.0
 
 
   #Firebase Dependencies
-  firebase_core: ^4.2.0
-  http: ^1.5.0
-  firebase_auth: ^6.1.1
-  cloud_firestore: ^6.0.3  #https://pub.dev/packages/cloud_firestore/install
-  firebase_storage: ^13.0.4
+  firebase_core: ^4.15.0
+  http: ^1.6.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0  #https://pub.dev/packages/cloud_firestore/install
+  firebase_storage: ^13.6.0
   firebase_analytics_web: ^0.6.1 #https://pub.dev/packages/firebase_analytics/install
   firebase_analytics: ^12.0.3
 
@@ -46,10 +47,10 @@ dependencies:
   get_it: ^8.2.0
 
   #animations:
-  confetti: ^0.7.0
+  confetti: ^0.8.0
   lottie: ^3.3.2
-  cached_network_image: ^3.4.1
-  shared_preferences: ^2.5.3
+  cached_network_image: ^4.0.0
+  shared_preferences: ^2.5.5
   firebase_app_check: ^0.4.1+2
 
 

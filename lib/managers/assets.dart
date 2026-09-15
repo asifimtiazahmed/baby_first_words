@@ -10,4 +10,5 @@ class Assets {
   static const tryAgain = 'music/try_again.mp3';
   static const findThe = 'music/find_the.mp3';
   static const successHarp = 'music/success_harp.mp3';
+  static const sfxWrong = 'music/sfx_try_again.mp3';
 }

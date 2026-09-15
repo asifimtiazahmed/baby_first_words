@@ -74,23 +74,24 @@ class PickGameViewModel extends ChangeNotifier {
 
     if (selectedItem == correctItem) {
       // Correct
+      _audioManager.playSuccessHarp();
       if (selectedItem.soundPath != null) {
         await _audioManager.playSound(selectedItem.soundPath!);
       }
-      await Future.delayed(const Duration(milliseconds: 1000));
-      await _audioManager.playSuccessHarp();
+      await Future.delayed(const Duration(milliseconds: 600));
       await _audioManager.playWellDone();
       // Wait for celebration
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(milliseconds: 1500));
 
       currentIndex++;
       _loadLevel();
     } else {
       // Incorrect
+      _audioManager.playWrongSfx();
       if (selectedItem.soundPath != null) {
         await _audioManager.playSound(selectedItem.soundPath!);
       }
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 600));
       await _audioManager.playTryAgain();
     }
 

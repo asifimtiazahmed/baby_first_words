@@ -3,6 +3,7 @@ import 'package:baby_f_words/screens/lobby/lobby_view.dart';
 import 'package:baby_f_words/screens/lobby/lobby_view_model.dart';
 import 'package:baby_f_words/screens/slideshow/slideshow_view.dart';
 import 'package:baby_f_words/screens/slideshow/slideshow_view_model.dart';
+import 'package:baby_f_words/widgets/sparkle_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,7 @@ class FirstWords extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) => SparkleOverlay(child: child ?? const SizedBox()),
       initialRoute: '/',
       routes: {
         '/': (context) => MultiProvider(providers: [

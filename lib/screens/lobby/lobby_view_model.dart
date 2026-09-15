@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:baby_f_words/managers/audio_cache_manager.dart';
 import 'package:baby_f_words/app_theme.dart';
 import 'package:baby_f_words/big_button.dart';
 import 'package:baby_f_words/constants.dart';
@@ -84,6 +85,7 @@ class LobbyViewModel with ChangeNotifier {
           }
           //GETS AND STORES THE LIST OF ASSETS ON EACH OF THE STORAGE FOLDERS
           soundPath = await _firebaseManager.getDownloadUrl(soundPath);
+          soundPath = await AudioCacheManager.instance.getLocalAudioPath(soundPath);
           fileImagePath = await _firebaseManager.getDownloadUrl(fileImagePath);
 
           Slideshow slideshow;
@@ -193,6 +195,8 @@ class LobbyViewModel with ChangeNotifier {
           updateButton(indexOfButtonInButtonList, completed);
 
           String soundUrl = await _firebaseManager.getDownloadUrl(soundPaths[j]);
+          // Pre-download audio to local cache so playback is instant
+          await AudioCacheManager.instance.getLocalAudioPath(soundUrl);
 
           Item item = Item(name: imageName, soundPath: soundUrl, imagePath: imageUrl, itemIndex: itemIndex);
           generateItems.add(item);

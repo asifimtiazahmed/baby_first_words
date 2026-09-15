@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:baby_f_words/constants.dart';
+import 'package:baby_f_words/managers/audio_cache_manager.dart';
 import 'package:baby_f_words/models/slideshow.dart';
 import 'package:baby_f_words/screens/slideshow/slideshow_view.dart';
 import 'package:flutter/material.dart';
@@ -168,30 +170,36 @@ class _BigButtonState extends State<BigButton> {
   }
 
   void _handlePress() async {
-     if (widget.slideshow != null && !widget.isLoading) {
-        if (widget.onTap != null) {
-          widget.onTap!();
-        }
-        final newPlayer = AudioPlayer();
-        await newPlayer
-            .play(
-              UrlSource(widget.soundPath),
-              mode: PlayerMode.lowLatency,
-            )
-            .whenComplete(() {
-              if (mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SlideshowView(
-                      slideshow: widget.slideshow!,
-                    ),
-                  ),
-                );
-              }
-            });
-
-        await newPlayer.setReleaseMode(ReleaseMode.release);
+    if (widget.slideshow != null && !widget.isLoading) {
+      if (widget.onTap != null) {
+        widget.onTap!();
       }
+      if (widget.soundPath.isNotEmpty) {
+        final newPlayer = AudioPlayer();
+        AudioCacheManager.instance.getLocalAudioPath(widget.soundPath).then((localPath) {
+          Source? source;
+          if (File(localPath).existsSync()) {
+            source = DeviceFileSource(localPath);
+          } else if (localPath.startsWith('http://') || localPath.startsWith('https://')) {
+            source = UrlSource(localPath);
+          } else if (widget.soundPath.startsWith('http://') || widget.soundPath.startsWith('https://')) {
+            source = UrlSource(widget.soundPath);
+          }
+          if (source != null) {
+            newPlayer.play(source, mode: PlayerMode.lowLatency);
+          }
+        });
+      }
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SlideshowView(
+              slideshow: widget.slideshow!,
+            ),
+          ),
+        );
+      }
+    }
   }
 }

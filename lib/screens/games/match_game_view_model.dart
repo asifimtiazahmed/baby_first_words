@@ -102,22 +102,24 @@ class MatchGameViewModel extends ChangeNotifier {
       
       if (firstFlippedCard!.item.name == card.item.name) {
         // MATCH!
-        await Future.delayed(const Duration(milliseconds: 500));
+        _audioManager.playSuccessHarp();
+        await Future.delayed(const Duration(milliseconds: 400));
         await _audioManager.playWellDone();
-        
+
         firstFlippedCard!.isMatched = true;
         card.isMatched = true;
         firstFlippedCard = null;
-        
+
         // Check win
         if (cards.every((c) => c.isMatched)) {
-           isGameFinished = true;
+          isGameFinished = true;
         }
       } else {
         // NO MATCH
-        await Future.delayed(const Duration(milliseconds: 1000));
+        _audioManager.playWrongSfx();
+        await Future.delayed(const Duration(milliseconds: 600));
         await _audioManager.playTryAgain();
-        
+
         // Flip back
         firstFlippedCard!.isFlipped = false;
         card.isFlipped = false;

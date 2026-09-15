@@ -12,32 +12,23 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-class SlideshowView extends StatefulWidget {
+class SlideshowView extends StatelessWidget {
   final Slideshow? slideshow;
   const SlideshowView({super.key, this.slideshow});
-
-  @override
-  State<SlideshowView> createState() => _SlideshowViewState();
-}
-
-class _SlideshowViewState extends State<SlideshowView> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Provider.of<SlideShowViewModel>(context, listen: false).precacheImages(context);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
-      create: (_) => SlideShowViewModel(slideshow: widget.slideshow),
-      child: Consumer<SlideShowViewModel>(
-        builder: (context, vm, _) => Scaffold(
+      create: (_) => SlideShowViewModel(slideshow: slideshow),
+      builder: (context, _) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            Provider.of<SlideShowViewModel>(context, listen: false).precacheImages(context);
+          }
+        });
+        return Consumer<SlideShowViewModel>(
+          builder: (context, vm, _) => Scaffold(
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -273,8 +264,8 @@ class _SlideshowViewState extends State<SlideshowView> {
                   ),
                 ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget volume(bool status) {
