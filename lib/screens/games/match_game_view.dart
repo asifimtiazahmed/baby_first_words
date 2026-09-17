@@ -24,7 +24,7 @@ class MatchGameView extends StatelessWidget {
           backgroundColor: AppColors.creamyWhite,
           appBar: AppBar(
             title: Text(
-              "Match the...",
+              "Match the ${slideshow.slideshowName}",
               style: AppTextStyles.header.copyWith(fontSize: 24),
             ),
             backgroundColor: AppColors.creamyWhite,
@@ -38,9 +38,7 @@ class MatchGameView extends StatelessWidget {
                   Expanded(
                     child: vm.cards.isEmpty
                         ? _buildSelectionScreen(context, vm)
-                        : (vm.isGameFinished
-                            ? _buildGameFinished(context, vm)
-                            : _buildGameGrid(context, vm)),
+                        : (vm.isGameFinished ? _buildGameFinished(context, vm) : _buildGameGrid(context, vm)),
                   ),
                   if (vm.banner != null)
                     Container(
@@ -52,7 +50,7 @@ class MatchGameView extends StatelessWidget {
                 ],
               ),
               if (vm.isProcessing && !vm.isGameFinished && vm.cards.isNotEmpty)
-                 Positioned.fill(child: Container(color: Colors.transparent)), // Block input
+                Positioned.fill(child: Container(color: Colors.transparent)), // Block input
             ],
           ),
         ),
@@ -66,14 +64,14 @@ class MatchGameView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-             "Select Grid Size",
-             style: AppTextStyles.display.copyWith(fontSize: 30),
+            "Select Grid Size",
+            style: AppTextStyles.display.copyWith(fontSize: 30),
           ),
           const SizedBox(height: 30),
           _gridButton(context, "4 x 4", () => vm.initGame(4, 4), AppColors.sunnyYellow),
           const SizedBox(height: 20),
           _gridButton(context, "4 x 5", () => vm.initGame(4, 5), AppColors.grassGreen), // 20 cards
-           const SizedBox(height: 20),
+          const SizedBox(height: 20),
           _gridButton(context, "6 x 6", () => vm.initGame(6, 6), AppColors.skyBlue),
           // 12x12 is likely too big for mobile items to be visible/clickable
         ],
@@ -87,13 +85,9 @@ class MatchGameView extends StatelessWidget {
       child: Container(
         width: 200,
         padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-             BoxShadow(color: Colors.black26, offset: const Offset(0, 4), blurRadius: 4),
-          ]
-        ),
+        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20), boxShadow: [
+          BoxShadow(color: Colors.black26, offset: const Offset(0, 4), blurRadius: 4),
+        ]),
         child: Text(
           label,
           textAlign: TextAlign.center,
@@ -106,7 +100,7 @@ class MatchGameView extends StatelessWidget {
   Widget _buildGameGrid(BuildContext context, MatchGameViewModel vm) {
     // Determine crossAxisCount based on card count
     // 16 -> 4, 20 -> 4, 36 -> 6
-    int cols = sqrt(vm.cards.length).floor(); 
+    int cols = sqrt(vm.cards.length).floor();
     if (vm.cards.length == 20) cols = 4; // 4x5
 
     return Padding(
@@ -117,34 +111,34 @@ class MatchGameView extends StatelessWidget {
         crossAxisSpacing: 8,
         childAspectRatio: 0.8,
         children: vm.cards.map((card) {
-           return GestureDetector(
-             onTap: () => vm.onCardTapped(card),
-             child: TweenAnimationBuilder<double>(
-               tween: Tween(begin: 0, end: card.isFlipped || card.isMatched ? 180 : 0),
-               duration: const Duration(milliseconds: 300),
-               builder: (context, val, __) {
-                 final isFront = val < 90;
-                 return Transform(
-                   alignment: Alignment.center,
-                   transform: Matrix4.identity()
-                     ..setEntry(3, 2, 0.001)
-                     ..rotateY(val * pi / 180),
-                   child: isFront
-                       ? _buildCardBack()
-                       : Transform(
-                           alignment: Alignment.center,
-                           transform: Matrix4.identity()..rotateY(pi), // Mirror image back
-                           child: _buildCardFront(card, vm),
-                         ),
-                 );
-               },
-             ),
-           );
+          return GestureDetector(
+            onTap: () => vm.onCardTapped(card),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: card.isFlipped || card.isMatched ? 180 : 0),
+              duration: const Duration(milliseconds: 300),
+              builder: (context, val, __) {
+                final isFront = val < 90;
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001)
+                    ..rotateY(val * pi / 180),
+                  child: isFront
+                      ? _buildCardBack()
+                      : Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateY(pi), // Mirror image back
+                          child: _buildCardFront(card, vm),
+                        ),
+                );
+              },
+            ),
+          );
         }).toList(),
       ),
     );
   }
-  
+
   Widget _buildCardBack() {
     return Container(
       decoration: BoxDecoration(
@@ -157,16 +151,16 @@ class MatchGameView extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildCardFront(MatchCard card, MatchGameViewModel vm) {
     if (card.isMatched) {
       // Disappear or show different state?
-      // User said: "if they match, they disappear". 
+      // User said: "if they match, they disappear".
       // Keeping invisible container to maintain grid layout.
       return Container(
         decoration: BoxDecoration(
-           color: Colors.black12.withValues(alpha: 0.05), // Almost invisible placeholder
-           borderRadius: BorderRadius.circular(8),
+          color: Colors.black12.withValues(alpha: 0.05), // Almost invisible placeholder
+          borderRadius: BorderRadius.circular(8),
         ),
       );
     }
@@ -187,8 +181,8 @@ class MatchGameView extends StatelessWidget {
   }
 
   Widget _buildGameFinished(BuildContext context, MatchGameViewModel vm) {
-      // Same end screen styles as PickGame
-     return Center(
+    // Same end screen styles as PickGame
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -198,7 +192,7 @@ class MatchGameView extends StatelessWidget {
             style: AppTextStyles.display.copyWith(fontSize: 40),
           ),
           const SizedBox(height: 40),
-           _gridButton(context, "Play Again", vm.restartGame, AppColors.candyPink),
+          _gridButton(context, "Play Again", vm.restartGame, AppColors.candyPink),
           const SizedBox(height: 20),
           _gridButton(context, "Back", () => Navigator.pop(context), AppColors.skyBlue),
         ],

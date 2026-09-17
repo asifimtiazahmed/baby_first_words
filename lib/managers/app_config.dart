@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'admob.dart';
 import 'data_manager.dart';
 import 'firebase_auth_manager.dart';
 import 'firebase_options.dart';
@@ -42,15 +42,21 @@ class AppConfig {
     AudioPlayer.global.setAudioContext(audioContext);
 
     final appFlavor = flavor;
-    await Firebase.initializeApp(name: 'baby-first-words', options: getFirebaseOptions()).whenComplete(() {
-      MobileAds.instance.initialize();
+    await Firebase.initializeApp(name: 'baby-first-words', options: getFirebaseOptions()).whenComplete(() async {
       GetIt.I.registerSingleton(DataManager());
+
+      final adMobService = AdMobService();
+      GetIt.I.registerSingleton(adMobService);
+      await adMobService.initAdMob(); // This replaces the old MobileAds.instance.initialize()
+
+      // 3. Register the rest of your services
       GetIt.I.registerSingleton(FirebaseAuthManager());
       final authManager = GetIt.I<FirebaseAuthManager>();
       GetIt.I.registerSingleton(FileHandler.instance);
       authManager.signInAnon();
       instantiateAppCheck();
-      //Setting AppFlavour
+
+      // 4. Setting AppFlavour
       GetIt.I<DataManager>().flavor = appFlavor;
     });
   }
