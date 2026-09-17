@@ -1,9 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:baby_f_words/app_theme.dart';
 
 class UniqueColorGenerator {
   static Random random = Random();
   static Color getColor() {
-    return Color.fromARGB(255, random.nextInt(255), random.nextInt(255), random.nextInt(255));
+    return AppColors.cardColors[random.nextInt(AppColors.cardColors.length)];
   }
 }

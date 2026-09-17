@@ -1,4 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:baby_f_words/managers/audio_cache_manager.dart';
+import 'package:baby_f_words/app_theme.dart';
+import 'package:baby_f_words/big_button.dart';
+import 'package:baby_f_words/constants.dart';
+import 'package:baby_f_words/managers/admob.dart';
 import 'package:baby_f_words/managers/assets.dart';
 import 'package:baby_f_words/managers/data_manager.dart';
 import 'package:baby_f_words/managers/firebase_storage_manager.dart';
@@ -6,16 +11,10 @@ import 'package:baby_f_words/managers/local_storage_manager.dart';
 import 'package:baby_f_words/models/items.dart';
 import 'package:baby_f_words/models/slideshow.dart';
 import 'package:flutter/material.dart';
-import 'package:baby_f_words/big_button.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logger/logger.dart';
 import 'package:recase/recase.dart';
-
-import 'package:baby_f_words/random_color_generator.dart';
-import 'package:baby_f_words/managers/admob.dart';
-
-import 'package:baby_f_words/constants.dart';
 
 class LobbyViewModel with ChangeNotifier {
   bool isLoading = true;
@@ -35,37 +34,41 @@ class LobbyViewModel with ChangeNotifier {
     createBannerAd();
   }
 
-  createBannerAd() {
+  void createBannerAd() {
     banner = BannerAd(
-        size: AdSize.fullBanner,
-        adUnitId: AdMobService().getBannerAdId(),
-        listener: AdMobService.bannerListener,
-        request: const AdRequest())
-      ..load();
+      size: AdSize.fullBanner,
+      adUnitId: AdMobService().getBannerAdId(),
+      listener: AdMobService.bannerListener,
+      request: const AdRequest(),
+    )..load();
   }
 
-  init() async {
+  Future<void> init() async {
     await audioPlayer.setSource(AssetSource(Assets.startUpMusic));
     await audioPlayer.resume();
     try {
-      listOfFolders = await _firebaseManager.generateFileList().timeout( Duration(seconds: timeOutInSeconds)); //Folders on the firestore_storageManager.
-       } catch(e){
+      listOfFolders = await _firebaseManager.generateFileList().timeout(
+        Duration(seconds: timeOutInSeconds),
+      ); //Folders on the firestore_storageManager.
+    } catch (e) {
       logger.e(e);
     }
     listOfButtons.clear();
     _dataManager.bigButtonList.clear();
     bool folderNeedsDownload = false;
     //MAIN Loop to create the buttons
-    if(listOfFolders.isNotEmpty) {
+    if (listOfFolders.isNotEmpty) {
       for (var item in listOfFolders) {
         folderNeedsDownload = false;
 
         String slideshowName = item.titleCase;
 
-        List<String> imagePaths =
-        await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.images.pathName]);
-        List<String> soundPaths =
-        await _firebaseManager.getListOfFilesAtPath(pathComponents: [item, FirebaseStorageFolders.sounds.pathName]);
+        List<String> imagePaths = await _firebaseManager.getListOfFilesAtPath(
+          pathComponents: [item, FirebaseStorageFolders.images.pathName],
+        );
+        List<String> soundPaths = await _firebaseManager.getListOfFilesAtPath(
+          pathComponents: [item, FirebaseStorageFolders.sounds.pathName],
+        );
         List<String> baseAssets = await _firebaseManager.getListOfFilesAtPath(pathComponents: [item]);
 
         folderNeedsDownload = await needToDownload(slideshowName, imagePaths);
@@ -82,6 +85,7 @@ class LobbyViewModel with ChangeNotifier {
           }
           //GETS AND STORES THE LIST OF ASSETS ON EACH OF THE STORAGE FOLDERS
           soundPath = await _firebaseManager.getDownloadUrl(soundPath);
+          soundPath = await AudioCacheManager.instance.getLocalAudioPath(soundPath);
           fileImagePath = await _firebaseManager.getDownloadUrl(fileImagePath);
 
           Slideshow slideshow;
@@ -96,17 +100,25 @@ class LobbyViewModel with ChangeNotifier {
             );
 
             //Creating the slideshowItem to be stored and later processed
-            SlideshowItem slideshowItem =
-            SlideshowItem(name: slideshowName, imageList: imagePaths, soundList: soundPaths);
+            SlideshowItem slideshowItem = SlideshowItem(
+              name: slideshowName,
+              imageList: imagePaths,
+              soundList: soundPaths,
+            );
             slideshowItems.add(slideshowItem);
           }
+          // Assign consistent colors based on index
+          int colorIndex = listOfButtons.length % AppColors.cardColors.length;
+          Color buttonColor = AppColors.cardColors[colorIndex];
+
           BigButton bigButton = BigButton(
             soundPath: soundPath,
             fileImagePath: fileImagePath,
             name: slideshowName,
             slideshow: slideshow,
             isLoading: (folderNeedsDownload) ? isLoadingButton : !isLoadingButton,
-            textColor: Colors.black54,//UniqueColorGenerator.getColor(),
+            topRightColor: buttonColor,
+            textColor: Colors.white, // White text looks better on vibrant colors
           );
 
           listOfButtons.add(bigButton);
@@ -124,11 +136,14 @@ class LobbyViewModel with ChangeNotifier {
     }
   }
 
-  addSlideshowAndCompleteButtons() async {
+  Future<void> addSlideshowAndCompleteButtons() async {
     for (var i = 0; i < listOfButtons.length; i++) {
       int index = slideshowItems.indexWhere((slideshowElement) => slideshowElement.name == listOfButtons[i].name);
-      listOfButtons[i].slideshow?.items =
-          await generateItemListObjects(slideshowItems[index].imageList, slideshowItems[index].soundList, i);
+      listOfButtons[i].slideshow?.items = await generateItemListObjects(
+        slideshowItems[index].imageList,
+        slideshowItems[index].soundList,
+        i,
+      );
       await _storageManager.writeSlideshow(listOfButtons[i].slideshow!);
     }
   }
@@ -150,7 +165,10 @@ class LobbyViewModel with ChangeNotifier {
   }
 
   Future<List<Item>> generateItemListObjects(
-      List<String> imagePaths, List<String> soundPaths, int indexOfButtonInButtonList) async {
+    List<String> imagePaths,
+    List<String> soundPaths,
+    int indexOfButtonInButtonList,
+  ) async {
     List<Item> generateItems = [];
     //Both the lists should be the same
     int? itemIndex = 0;
@@ -177,13 +195,10 @@ class LobbyViewModel with ChangeNotifier {
           updateButton(indexOfButtonInButtonList, completed);
 
           String soundUrl = await _firebaseManager.getDownloadUrl(soundPaths[j]);
+          // Pre-download audio to local cache so playback is instant
+          await AudioCacheManager.instance.getLocalAudioPath(soundUrl);
 
-          Item item = Item(
-            name: imageName,
-            soundPath: soundUrl,
-            imagePath: imageUrl,
-            itemIndex: itemIndex,
-          );
+          Item item = Item(name: imageName, soundPath: soundUrl, imagePath: imageUrl, itemIndex: itemIndex);
           generateItems.add(item);
 
           increment++;
@@ -202,9 +217,12 @@ class LobbyViewModel with ChangeNotifier {
     return generateItems;
   }
 
-  updateButton(int index, double percentage) {
+  void updateButton(int index, double percentage) {
     listOfButtons[index];
     bool isLoading = percentage != 1 ? true : false;
+    int colorIndex = index % AppColors.cardColors.length;
+    Color buttonColor = AppColors.cardColors[colorIndex];
+    
     BigButton bigButton = BigButton(
       name: listOfButtons[index].name,
       soundPath: listOfButtons[index].soundPath,
@@ -212,10 +230,8 @@ class LobbyViewModel with ChangeNotifier {
       isLoading: isLoading,
       progressValue: percentage,
       slideshow: listOfButtons[index].slideshow,
-      topRightColor: Colors.blue.withOpacity(0.3),
-      bottomLeftColor: Colors.purple.withOpacity(0.3),
-      textColor: Colors.black54,//listOfButtons[index].textColor,
-      //volume: listOfButtons[index].volume, //max
+      topRightColor: buttonColor,
+      textColor: Colors.white,
     );
     listOfButtons[index] = bigButton;
     notifyListeners();

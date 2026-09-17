@@ -3,18 +3,19 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:logger/logger.dart';
+
 part 'items.g.dart';
 
 @JsonSerializable()
 class Item extends Equatable {
-  String? name;
-  String? imagePath;
-  String? soundPath;
-  int? itemIndex;
+  final String? name;
+  final String? imagePath;
+  final String? soundPath;
+  final int? itemIndex;
 
   static final logger = Logger();
 
-  Item({this.imagePath, this.name, this.soundPath, this.itemIndex});
+  const Item({this.imagePath, this.name, this.soundPath, this.itemIndex});
 
   factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
 
